@@ -11,35 +11,33 @@ ________________________________________________________________________________
 
 ## Linux
 
-- sudo apt update
-- sudo apt install postgresql postgresql-contrib
+- **_sudo apt update_**
+- **_sudo apt install postgresql postgresql-contrib_**
 
 1. Faça o login como usuario postgres
-- sudo -i -u postgres
+- **_sudo -i -u postgres_**
 
 2. Acesse o postgress psql
-- psql
-    para sair basta digitar
-- \q
-    e finalmente
-- exit
+- **_psql_**
+- **_\q_**
+- **_exit_**
 
 ### Criando banco de dados e usuario
 
 1. Faça o login como usuario postgres e abrir psql CLI
-- sudo -u postgres psql
+- **_sudo -u postgres psql_**
 
 2. Crie um banco de dados com o seguinte comando contendo o respectivo nome
-- create database products;
+- **_create database products;_**
 
 3. Crie um novo usuário com uma senha com o seguinte comando:
-- create user username with encrypted password 'password';
+- **_create user username with encrypted password 'password';_**
 
 4. Por fim, dê ao usuário todos os privilégios no banco de dados:
-- grant all privileges on database products to username;
+- **_grant all privileges on database products to username;_**
 
-5. Adicione a permissão createdb ao usuário
-- ALTER USER username CREATEDB;
+5. Adicione a permissão createdb ao usuário para rodar os testes:
+- **_ALTER USER username CREATEDB;_**
 
 ### Rodando o projeto
 
