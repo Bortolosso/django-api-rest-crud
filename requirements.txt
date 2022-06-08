@@ -1,0 +1,5 @@
+Django==3.2.6
+celery==5.0.2
+psycopg2-binary==2.8.5
+djangorestframework>=3.13.1
+django-cors-headers>=3.12.0
