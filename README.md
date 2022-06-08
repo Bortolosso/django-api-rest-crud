@@ -61,7 +61,9 @@ ________________________________________________________________________________
 
 - **Windowns, MacOs, Linux** -> $ **_pip install -r requirements.txt_**
 
-4. Rode a API com o comando -> $ **_python app/main.py_**
+4. Rode a API com o comando -> $ **_python manage.py runserver_**
+
+5. Rode os testes com o comando -> $ **_python manage.py test_**
 
 Api Restfull -> [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
