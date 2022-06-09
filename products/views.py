@@ -1,10 +1,11 @@
-from cmath import log
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.utils import translate_validation
 
 from .models import Product
 from .serializers import ProductSerializer
+from .filters import ProductFilter
 
 """Viwes
 Views baseado em função
@@ -23,12 +24,10 @@ def get_delete_update_product(request, pk):
 
     if request.method == 'GET':
         serializer = ProductSerializer(product)
-
         return Response(serializer.data)
 
     elif request.method == 'DELETE':
         product.delete()
-
         return Response({
             "message": "Produto: {0}, deletado com sucesso no sistema.".format(product.name), 
             "status": status.HTTP_204_NO_CONTENT
@@ -37,21 +36,17 @@ def get_delete_update_product(request, pk):
     elif request.method == 'PUT':
         name_product = request.data.get('name')
         quantity_product = int(request.data.get('quantity_product'))
-        
         if request.data.get('name') != product.name:  
             exist_product_name = Product.objects.filter(name=request.data.get('name')).exists()
-
             if exist_product_name:
                 return Response({
                     "message": "Já existe um produto com o nome: {0}".format(name_product), 
                     "data": request.data, 
                     "status": status.HTTP_400_BAD_REQUEST
                 })
-
         status_product = "Indisponivel"
         if quantity_product > 0:
             status_product = "Disponivel"
-
         data = {
             'id': pk,
             'name': name_product,
@@ -60,16 +55,13 @@ def get_delete_update_product(request, pk):
             'status': status_product,
         }
         serializer = ProductSerializer(product, data=data)
-
         if serializer.is_valid():
             serializer.save()
-
             return Response({
                 "message": "Produto atualizado com sucesso. ID: {0}".format(pk), 
                 "data": serializer.data, 
                 "status": status.HTTP_204_NO_CONTENT
             })
-
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -77,19 +69,18 @@ def get_delete_update_product(request, pk):
 def get_post_product(request):
 
     if request.method == 'GET':
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-
+        filterset = ProductFilter(request.GET, queryset=Product.objects.all())
+        if not filterset.is_valid():
+            raise translate_validation(filterset.errors)
+        serializer = ProductSerializer(filterset.qs, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
         name_product = request.data.get('name')
         quantity_product = int(request.data.get('quantity_product'))
-
         status_product = "Indisponivel"
         if quantity_product > 0:
             status_product = "Disponivel"
-
         exist_product_name = Product.objects.filter(
             name=request.data.get('name')).exists()
         if exist_product_name:
@@ -97,7 +88,6 @@ def get_post_product(request):
                 "message": "Produto: {0}, já cadastrado no sistema.".format(name_product),
                 "status": status.HTTP_400_BAD_REQUEST
             })
-
         data = {
             'name': name_product,
             'unity_value': int(request.data.get('unity_value')),
@@ -105,16 +95,13 @@ def get_post_product(request):
             'status': status_product,
         }
         serializer = ProductSerializer(data=data)
-
         if serializer.is_valid():
             serializer.save()
-
             return Response({
                 "message": "Produto adicioando com sucesso.",
                 "data": serializer.data,
                 "status": status.HTTP_201_CREATED
             })
-
         return Response({
             "message": "verifique seu object payload.",
             "data": serializer.errors,
