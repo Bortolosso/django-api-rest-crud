@@ -123,7 +123,8 @@ def get_post_product(request):
 def get_post_request_product(request):
 
     if request.method == 'GET':
-        filterset = RequestProductFilter(request.GET, queryset=RequestProduct.objects.all())
+        filterset = RequestProductFilter(
+            request.GET, queryset=RequestProduct.objects.all())
         if not filterset.is_valid():
             raise translate_validation(filterset.errors)
         serializer = RequestProductSerializer(filterset.qs, many=True)
@@ -145,25 +146,25 @@ def get_post_request_product(request):
         status_product = "Indisponivel"
         if quantity_product > 0:
             status_product = "Disponivel"
-        
+
         if request_solicited > quantity_product_by_get:
             return Response({
                 "message": "A quantidade de itens é maior do que disponível em estoque. Solicitado: {0}, Disponivel: {1}.".format(request_solicited, quantity_product_by_get),
                 "status": status.HTTP_400_BAD_REQUEST
             })
-        
+
         if not exist_product:
             return Response({
                 "message": "Produto: {0}, não exites no sistema.".format(product_requested),
                 "status": status.HTTP_400_BAD_REQUEST
             })
-            
+
         if status_product_by_get == "Indisponivel":
             return Response({
                 "message": "Produto: {0}, não está disponível no sistema.".format(product_requested),
                 "status": status.HTTP_400_BAD_REQUEST
             })
-        
+
         data_product = {
             'id': find_product_by_name.id,
             'name': find_product_by_name.name,
@@ -171,7 +172,7 @@ def get_post_request_product(request):
             'quantity_product': quantity_product,
             'status': status_product,
         }
-        
+
         data_request = {
             'product': request.data.get('product'),
             'unity_value_request': int(request.data.get('unity_value_request')),
@@ -181,27 +182,30 @@ def get_post_request_product(request):
             'address': request.data.get('address'),
             'order_status': request.data.get('order_status'),
         }
-        
-        serializer_update_product = ProductSerializer(find_product_by_name, data=data_product)
-        serializer_request_product = RequestProductSerializer(data=data_request)
-        
+
+        serializer_update_product = ProductSerializer(
+            find_product_by_name, data=data_product)
+        serializer_request_product = RequestProductSerializer(
+            data=data_request)
+
         if serializer_update_product.is_valid() and serializer_request_product.is_valid():
             serializer_request_product.save()
             serializer_update_product.save()
-            
+
             return Response({
                 "message": "Solicitação do pedido {0} envidada com sucesso.".format(request.data.get('product')),
                 "data_product_updated": serializer_update_product.data,
                 "data_request_product": serializer_request_product.data,
                 "status": status.HTTP_201_CREATED
             })
-            
+
         return Response({
             "message": "verifique seu object payload.",
             "data": serializer.errors,
             "status": status.HTTP_400_BAD_REQUEST
         })
-        
+
+
 @ api_view(['GET', 'DELETE'])
 @authentication_classes([BasicAuthentication])
 @permission_classes([IsAuthenticated, IsAdminUser])
