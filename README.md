@@ -35,25 +35,23 @@ ________________________________________________________________________________
 - $ _virtualenv env_
 2. Iniciar maquina virtual: 
 - $ _source env/bin/activate_
-
 3. ###### Instale todas as depedencias e bibliotecas do projeto com o comando:
 - $ _pip install -r requirements.txt_
 - $ _python manage.py runserver_
-
-- Api Restfull -> [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- Documentação da API(SWAGGER) -> [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-
-- Rode os testes automatizados com o comando -> $ _python manage.py test_
-
+4. ###### Api Restfull: 
+- [http://127.0.0.1:8000](http://127.0.0.1:8000)
+5. ###### Documentação da API(SWAGGER):
+- [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+6. ###### Rode os testes automatizados com o comando:  
+- $ _python manage.py test_
 1. ###### Crie um super-usuario para se autenticar e utilizar os serviços da API
 - ###### Obs: essa aplicação usa o metodo **Basic Auth** 
 - $ _python manage.py createsuperuser_
-
 ### Endpoints
 ##### Products:
 ###### Retorna todos os PRODUTOS:
 **GET** _http://localhost:8000/api/v1/products/_
-###### Retorna os PRODUTOS com os filtros "Disponivel" ou "Indisponivel" com o parametro status na URL:
+###### Retorna os PRODUTOS com os filtros "Disponivel" ou "Indisponivel" com o parametro "status" na URL:
 **GET** _http://localhost:8000/api/v1/products/?param=filter_
 
 **POST** _http://localhost:8000/api/v1/products/_
@@ -85,7 +83,7 @@ ________________________________________________________________________________
 ##### Request/Solicitação de pedidos de produtos:
 ###### Retorna todos os PEDIDOS:
 **GET** _http://localhost:8000/api/v1/request/products/_
-###### Retorna os PRODUTOS com os filtros "Pendente", "Enviado" e "Entregue" com o parametro order_status na URL:
+###### Retorna os PRODUTOS com os filtros "Pendente", "Enviado" e "Entregue" com o parametro "order_status" na URL:
 **GET** _http://localhost:8000/api/v1/request/products/?param=filter_
 
 **POST** _http://localhost:8000/api/v1/request/products/_
