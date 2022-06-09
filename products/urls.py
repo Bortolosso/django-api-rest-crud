@@ -16,5 +16,15 @@ urlpatterns = [
         r'^api/v1/products/$',
         views.get_post_product,
         name='get_post_product'
+    ),
+    url(
+        r'^api/v1/request/products/$',
+        views.get_post_request_product,
+        name='get_post_request_product'
+    ),
+    url(
+        r'^api/v1/request/products/(?P<pk>[0-9]+)$',
+        views.get_delete_update_request_product,
+        name='get_delete_update_request_product'
     )
 ]
