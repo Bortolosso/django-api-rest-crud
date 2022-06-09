@@ -58,7 +58,7 @@ ________________________________________________________________________________
 ###### Body exemplo:
 ```sh
 {
-    "name": "Camiseta Polo",
+    "name": "Camiseta Polo Branca",
     "unity_value": 450,
     "quantity_product": 10
 }
@@ -72,7 +72,7 @@ ________________________________________________________________________________
 ###### Body exemplo:
 ```sh
 {
-    "name": "Camiseta Polo",
+    "name": "Camiseta Polo Preta",
     "unity_value": 450,
     "quantity_product": 10
 }
@@ -90,7 +90,7 @@ ________________________________________________________________________________
 ###### Body exemplo:
 ```sh
 {
-    "product":"Camiseta do Inter",
+    "product":"Camiseta da Juventus",
     "unity_value_request":500,
     "quantity_product_request":40,
     "requester":"User",
