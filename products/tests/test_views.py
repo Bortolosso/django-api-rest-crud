@@ -1,21 +1,24 @@
 import json
 
 from rest_framework import status
-from django.test import TestCase, Client
+from django.test import TestCase
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 
 from django.urls import reverse
 
 from ..models import Product
 from ..serializers import ProductSerializer
 
-
-client = Client()
+client = APIClient()
 
 
 class GetAllProductsTest(TestCase):
     """ Modulos de teste para GET todos os produtos API """
 
     def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'myuser', 'admin@mgmail.com', 'test')
         Product.objects.create(
             name='Camiseta do Barcelona', unity_value=500, quantity_product=10, status="Disponível"
         )
@@ -30,6 +33,7 @@ class GetAllProductsTest(TestCase):
         )
 
     def test_get_all_products(self):
+        client.force_authenticate(user=self.admin)
         response = client.get(reverse('get_post_product'))
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
@@ -41,6 +45,8 @@ class GetSingleProductTest(TestCase):
     """ Modulos de teste para GET unico """
 
     def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'myuser', 'admin@mgmail.com', 'test')
         self.barcelona = Product.objects.create(
             name='Camiseta do Barcelona', unity_value=500, quantity_product=10, status="Disponível"
         )
@@ -55,6 +61,7 @@ class GetSingleProductTest(TestCase):
         )
 
     def test_get_valid_single_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.get(
             reverse('get_delete_update_product', kwargs={'pk': self.inter.pk}))
         product = Product.objects.get(pk=self.inter.pk)
@@ -75,6 +82,8 @@ class CreateNewProductTest(TestCase):
     """ Teste criação de produto """
 
     def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'myuser', 'admin@mgmail.com', 'test')
         self.valid_payload = {
             'name': 'Meia do Internacional',
             'unity_value': 40,
@@ -85,27 +94,31 @@ class CreateNewProductTest(TestCase):
             'unity_value': 40,
             'quantity_product': 18,
         }
-        
+
         self.valid_payload_equall = {
             'name': 'Meia do Sao Paulo',
             'unity_value': 40,
             'quantity_product': 18,
         }
-        
+
         self.juventus = Product.objects.create(
             name='Meia do Sao Paulo', unity_value=480, quantity_product=6, status="Disponível"
         )
 
     def test_create_valid_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.post(
             reverse('get_post_product'),
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
+        response_data = response.data
+        response_data = response_data.get('data')
+        id_dynamic_response = response_data.get('id')
         self.assertEqual(response.data, {
             "message": "Produto adicioando com sucesso.",
             "data": {
-                "id": 5,
+                "id": id_dynamic_response,
                 "name": "Meia do Internacional",
                 "quantity_product": 18,
                 "status": "Disponivel",
@@ -113,9 +126,9 @@ class CreateNewProductTest(TestCase):
             },
             "status": 201
         })
-        
-    
+
     def test_equall_name_invalid_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.post(
             reverse('get_post_product'),
             data=json.dumps(self.valid_payload_equall),
@@ -127,6 +140,7 @@ class CreateNewProductTest(TestCase):
         })
 
     def test_create_invalid_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.post(
             reverse('get_post_product'),
             data=json.dumps(self.invalid_payload),
@@ -142,17 +156,20 @@ class CreateNewProductTest(TestCase):
             "status": 400
         })
 
+
 class UpdateSingleProductTest(TestCase):
     """ Teste de atualização de dados já existentes """
 
     def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'myuser', 'admin@mgmail.com', 'test')
         self.barcelona = Product.objects.create(
             name='Camiseta do Barcelona', unity_value=500, quantity_product=10, status="Disponível"
         )
         self.sao_paulo = Product.objects.create(
             name='Camiseta do São Paulo', unity_value=350, quantity_product=15, status="Disponível"
         )
-        
+
         self.valid_payload = {
             'name': 'Camiseta do Corinthians',
             'unity_value': 450,
@@ -170,15 +187,20 @@ class UpdateSingleProductTest(TestCase):
         }
 
     def test_valid_update_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.put(
-            reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}),
+            reverse('get_delete_update_product',
+                    kwargs={'pk': self.sao_paulo.pk}),
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
+        response_data = response.data
+        response_data = response_data.get('data')
+        id_dynamic_response = response_data.get('id')
         self.assertEqual(response.data, {
-            "message": "Produto atualizado com sucesso. ID: 28",
+            "message": "Produto atualizado com sucesso. ID: {0}".format(id_dynamic_response),
             "data": {
-                "id": 28,
+                "id": id_dynamic_response,
                 "name": "Camiseta do Corinthians",
                 "unity_value": 450,
                 "quantity_product": 4,
@@ -186,10 +208,12 @@ class UpdateSingleProductTest(TestCase):
             },
             "status": 204
         })
-        
+
     def test_invalid_update_product_equall_name(self):
+        client.force_authenticate(user=self.admin)
         response = client.put(
-            reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}),
+            reverse('get_delete_update_product',
+                    kwargs={'pk': self.sao_paulo.pk}),
             data=json.dumps(self.invalid_payload_equall_name),
             content_type='application/json'
         )
@@ -204,11 +228,12 @@ class UpdateSingleProductTest(TestCase):
         })
 
     def test_invalid_update_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.put(
-            reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}),
+            reverse('get_delete_update_product',
+                    kwargs={'pk': self.sao_paulo.pk}),
             data=json.dumps(self.invalid_payload),
             content_type='application/json')
-        print("reponse", response.data)
         self.assertEqual(response.data, {
             "name": [
                 "This field may not be blank."
@@ -220,6 +245,8 @@ class DeleteSingleProductTest(TestCase):
     """ Teste de deleção de dado """
 
     def setUp(self):
+        self.admin = User.objects.create_superuser(
+            'myuser', 'admin@mgmail.com', 'test')
         self.barcelona = Product.objects.create(
             name='Camiseta do Barcelona', unity_value=500, quantity_product=10, status="Disponível"
         )
@@ -236,6 +263,7 @@ class DeleteSingleProductTest(TestCase):
         })
 
     def test_invalid_delete_product(self):
+        client.force_authenticate(user=self.admin)
         response = client.delete(
             reverse('get_delete_update_product', kwargs={'pk': 30}))
         self.assertEqual(response.data, {

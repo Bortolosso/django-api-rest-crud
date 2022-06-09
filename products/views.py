@@ -2,7 +2,7 @@ from django_filters.utils import translate_validation
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -17,7 +17,7 @@ Views baseado em função
 
 @ api_view(['GET', 'DELETE', 'PUT'])
 @authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def get_delete_update_product(request, pk):
     try:
         product = Product.objects.get(pk=pk)
@@ -73,7 +73,7 @@ def get_delete_update_product(request, pk):
 
 @ api_view(['GET', 'POST'])
 @authentication_classes([BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated,  IsAdminUser])
 def get_post_product(request):
 
     if request.method == 'GET':

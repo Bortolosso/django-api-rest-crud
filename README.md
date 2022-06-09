@@ -11,10 +11,10 @@ $ _sudo apt update_
 $ _sudo apt install postgresql postgresql-contrib_
 
 ###### Faça o login como usuário postgressSQL:
-$ _sudo -i -u postgres_
-$ _psql_
-$ _\q_
-$ _exit_
+- $ _sudo -i -u postgres_
+- $ _psql_
+- $ _\q_
+- $ _exit_
 #### Criando banco de dados e usuário
 
 ###### Faça o login como usuário postgressSQL e abrir psql CLI:
