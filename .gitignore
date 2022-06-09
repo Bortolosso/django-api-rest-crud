@@ -9,3 +9,9 @@ __pycache__
 /migrations
 
 migrations
+
+.coverage
+
+/products/tests/__pycache__
+
+products/tests/__pycache__
