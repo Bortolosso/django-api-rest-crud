@@ -37,13 +37,11 @@ ________________________________________________________________________________
 - $ _source env/bin/activate_
 3. ###### Instale todas as depedencias e bibliotecas do projeto com o comando:
 - $ _pip install -r requirements.txt_
-- $ _python manage.py runserver_
-4. ###### Api Restfull: 
-- [http://127.0.0.1:8000](http://127.0.0.1:8000)
-5. ###### Documentação da API(SWAGGER):
-- [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-6. ###### Rode os testes automatizados com o comando:  
+4. ###### Rode os testes automatizados com o comando:  
 - $ _python manage.py test_
+4. ###### Por ultime inicialize o servidor:
+- $ _python manage.py runserver_
+
 1. ###### Crie um super-usuario para se autenticar e utilizar os serviços da API
 - ###### Obs: essa aplicação usa o metodo **Basic Auth** 
 - $ _python manage.py createsuperuser_
