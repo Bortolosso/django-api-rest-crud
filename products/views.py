@@ -138,7 +138,14 @@ def get_post_request_product(request):
                 "status": status.HTTP_400_BAD_REQUEST
             })
         exist_product = Product.objects.filter(name=product_requested).exists()
-        find_product_by_name = Product.objects.get(name=product_requested)
+        try:
+            find_product_by_name = Product.objects.get(name=product_requested)
+        except Exception:
+            return Response({
+                "message": "Verifique o nome do produto solicitado. Produto solicitado: {0}".format(product_requested),
+                "status": status.HTTP_400_BAD_REQUEST
+            })
+            
         quantity_product_by_get = find_product_by_name.quantity_product
         status_product_by_get = find_product_by_name.status
         request_solicited = request.data.get('quantity_product_request')

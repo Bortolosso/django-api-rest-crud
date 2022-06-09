@@ -334,6 +334,16 @@ class CreateNewRequestProductTest(TestCase):
             "address": "Avenida Paulista, 4093 São Paulo-SP",
             "order_status": "Enviado"
         }
+        
+        self.invalid_payload_name_not_exist = {
+            "product": "Meia da Argentina",
+            "unity_value_request": 500,
+            "quantity_product_request": 40,
+            "requester": "User",
+            "forwarding_agent": "Correios",
+            "address": "Avenida Paulista, 4093 São Paulo-SP",
+            "order_status": "Enviado"
+        }
 
     def test_create_valid_product(self):
         client.force_authenticate(user=self.admin)
@@ -371,7 +381,7 @@ class CreateNewRequestProductTest(TestCase):
             "status": 201
         })
 
-    def test_equall_name_invalid_product(self):
+    def test_name_invalid_product(self):
         client.force_authenticate(user=self.admin)
         response = client.post(
             reverse('get_post_request_product'),
@@ -380,6 +390,18 @@ class CreateNewRequestProductTest(TestCase):
         )
         self.assertEqual(response.data, {
             "message": "Payload incorreto, parametro product obrigatorio.",
+            "status": 400
+        })
+        
+    def test_name_invalid_product_not_exist(self):
+        client.force_authenticate(user=self.admin)
+        response = client.post(
+            reverse('get_post_request_product'),
+            data=json.dumps(self.invalid_payload_name_not_exist),
+            content_type='application/json'
+        )
+        self.assertEqual(response.data, {
+            "message": "Verifique o nome do produto solicitado. Produto solicitado: Meia da Argentina",
             "status": 400
         })
 

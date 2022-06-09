@@ -7,16 +7,15 @@ ________________________________________________________________________________
 - PostgressSQL
 
 ##### Linux
+1. ###### Rode os seguintes comandos:
 - $ _sudo apt update_
 - $ _sudo apt install postgresql postgresql-contrib_
-
-1. ###### Faça o login como usuário postgressSQL:
+2. ###### Faça o login como usuário postgressSQL:
 - $ _sudo -i -u postgres_
 - $ _psql_
 - $ _\q_
 - $ _exit_
 #### Criando banco de dados e usuário
-
 1. ###### Faça o login como usuário postgressSQL e abrir psql CLI:
 - $ _sudo -u postgres psql_
 2. ###### Crie um banco de dados com o seguinte comando contendo o respectivo nome:
@@ -30,11 +29,12 @@ ________________________________________________________________________________
 
 #### Rodando o projeto
 1. ###### Esteja no diretorio **raiz** do projeto.
-2 .###### Inicialize e ative sua maquína virtual:
-
+2. ###### Inicialize e ative sua maquína virtual:
 **Linux:**
-1. Criar maquina virtual -> $ _virtualenv env_
-2. Iniciar maquina virtual -> $ _source env/bin/activate_
+1. Criar maquina virtual:
+- $ _virtualenv env_
+2. Iniciar maquina virtual: 
+- $ _source env/bin/activate_
 
 3. ###### Instale todas as depedencias e bibliotecas do projeto com o comando:
 - $ _pip install -r requirements.txt_
@@ -43,7 +43,7 @@ ________________________________________________________________________________
 - Api Restfull -> [http://127.0.0.1:8000](http://127.0.0.1:8000)
 - Documentação da API(SWAGGER) -> [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
-- Rode os testes com o comando -> $ _python manage.py test_
+- Rode os testes automatizados com o comando -> $ _python manage.py test_
 
 1. ###### Crie um super-usuario para se autenticar e utilizar os serviços da API
 - ###### Obs: essa aplicação usa o metodo **Basic Auth** 
@@ -51,9 +51,13 @@ ________________________________________________________________________________
 
 ### Endpoints
 ##### Products:
+###### Retorna todos os PRODUTOS:
+**GET** _http://localhost:8000/api/v1/products/_
+###### Retorna os PRODUTOS com os filtros "Disponivel" ou "Indisponivel" com o parametro status na URL:
+**GET** _http://localhost:8000/api/v1/products/?param=filter_
 
 **POST** _http://localhost:8000/api/v1/products/_
-###### Body
+###### Body exemplo:
 ```sh
 {
     "name": "Camiseta Polo",
@@ -62,18 +66,12 @@ ________________________________________________________________________________
 }
 ```
 
-###### Retorna todos os PRODUTOS:
-**GET** _http://localhost:8000/api/v1/products/_
+**GET by ID** _http://localhost:8000/api/v1/products/id_
 
-###### Retorna os PRODUTOS com o filtro Disponivel ou Indisponivel com o parametro **status** na URL:
-**GET** _http://localhost:8000/api/v1/products/?status=Indisponivel_
+**DELETE by ID** _http://localhost:8000/api/v1/products/id_
 
-**GET by ID** _http://localhost:8000/api/v1/products/**id**_
-
-**DELETE by ID** _http://localhost:8000/api/v1/products/**id**_
-
-**PUT by ID** _http://localhost:8000/api/v1/products/**id**_
-###### Body
+**PUT by ID** _http://localhost:8000/api/v1/products/id_
+###### Body exemplo:
 ```sh
 {
     "name": "Camiseta Polo",
@@ -83,3 +81,32 @@ ________________________________________________________________________________
 ```
 
 ___________________________________________________________________________________
+
+##### Request/Solicitação de pedidos de produtos:
+###### Retorna todos os PEDIDOS:
+**GET** _http://localhost:8000/api/v1/request/products/_
+###### Retorna os PRODUTOS com os filtros "Pendente", "Enviado" e "Entregue" com o parametro order_status na URL:
+**GET** _http://localhost:8000/api/v1/request/products/?param=filter_
+
+**POST** _http://localhost:8000/api/v1/request/products/_
+###### Body exemplo:
+```sh
+{
+    "product":"Camiseta do Inter",
+    "unity_value_request":500,
+    "quantity_product_request":40,
+    "requester":"User",
+    "forwarding_agent":"Correios",
+    "address":"Avenida Paulista, 4093 São Paulo-SP",
+    "order_status":"Enviado"
+}
+```
+
+**GET by ID** _http://localhost:8000/api/v1/request/products/id_
+
+**DELETE by ID** _http://localhost:8000/api/v1/request/products/id_
+
+___________________________________________________________________________________
+
+###### Considerações finais:
+Esse sistema segue um fluxo aonde precisa ser cadastrado um **produto** antes de solicitar um **pedido** para vizualizar todo o funcionamento dos respectivos CRUD.
