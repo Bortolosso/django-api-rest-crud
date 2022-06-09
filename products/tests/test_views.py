@@ -1,7 +1,10 @@
 import json
+
 from rest_framework import status
 from django.test import TestCase, Client
+
 from django.urls import reverse
+
 from ..models import Product
 from ..serializers import ProductSerializer
 
@@ -62,7 +65,10 @@ class GetSingleProductTest(TestCase):
     def test_get_invalid_single_product(self):
         response = client.get(
             reverse('get_delete_update_product', kwargs={'pk': 30}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, {
+            "message": "Não existe registro com o ID: 30.",
+            "status": 404
+        })
 
 
 class CreateNewProductTest(TestCase):
@@ -73,14 +79,22 @@ class CreateNewProductTest(TestCase):
             'name': 'Meia do Internacional',
             'unity_value': 40,
             'quantity_product': 18,
-            'status': 'Enviado'
         }
         self.invalid_payload = {
             'name': '',
             'unity_value': 40,
             'quantity_product': 18,
-            'status': ''
         }
+        
+        self.valid_payload_equall = {
+            'name': 'Meia do Sao Paulo',
+            'unity_value': 40,
+            'quantity_product': 18,
+        }
+        
+        self.juventus = Product.objects.create(
+            name='Meia do Sao Paulo', unity_value=480, quantity_product=6, status="Disponível"
+        )
 
     def test_create_valid_product(self):
         response = client.post(
@@ -88,7 +102,29 @@ class CreateNewProductTest(TestCase):
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data, {
+            "message": "Produto adicioando com sucesso.",
+            "data": {
+                "id": 5,
+                "name": "Meia do Internacional",
+                "quantity_product": 18,
+                "status": "Disponivel",
+                "unity_value": 40
+            },
+            "status": 201
+        })
+        
+    
+    def test_equall_name_invalid_product(self):
+        response = client.post(
+            reverse('get_post_product'),
+            data=json.dumps(self.valid_payload_equall),
+            content_type='application/json'
+        )
+        self.assertEqual(response.data, {
+            "message": "Produto: Meia do Sao Paulo, já cadastrado no sistema.",
+            "status": 400
+        })
 
     def test_create_invalid_product(self):
         response = client.post(
@@ -96,8 +132,15 @@ class CreateNewProductTest(TestCase):
             data=json.dumps(self.invalid_payload),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
+        self.assertEqual(response.data, {
+            "message": "verifique seu object payload.",
+            "data": {
+                "name": [
+                    "This field may not be blank."
+                ]
+            },
+            "status": 400
+        })
 
 class UpdateSingleProductTest(TestCase):
     """ Teste de atualização de dados já existentes """
@@ -111,16 +154,19 @@ class UpdateSingleProductTest(TestCase):
         )
         
         self.valid_payload = {
+            'name': 'Camiseta do Corinthians',
+            'unity_value': 450,
+            'quantity_product': 4,
+        }
+        self.invalid_payload_equall_name = {
             'name': 'Camiseta do Barcelona',
             'unity_value': 450,
             'quantity_product': 4,
-            'status': 'Enviado'
         }
         self.invalid_payload = {
             'name': '',
             'unity_value': 40,
             'quantity_product': 18,
-            'status': ''
         }
 
     def test_valid_update_product(self):
@@ -129,14 +175,45 @@ class UpdateSingleProductTest(TestCase):
             data=json.dumps(self.valid_payload),
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, {
+            "message": "Produto atualizado com sucesso. ID: 28",
+            "data": {
+                "id": 28,
+                "name": "Camiseta do Corinthians",
+                "unity_value": 450,
+                "quantity_product": 4,
+                "status": "Disponivel"
+            },
+            "status": 204
+        })
+        
+    def test_invalid_update_product_equall_name(self):
+        response = client.put(
+            reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}),
+            data=json.dumps(self.invalid_payload_equall_name),
+            content_type='application/json'
+        )
+        self.assertEqual(response.data, {
+            "message": "Já existe um produto com o nome: Camiseta do Barcelona",
+            "data": {
+                "name": "Camiseta do Barcelona",
+                "unity_value": 450,
+                "quantity_product": 4
+            },
+            "status": 400
+        })
 
     def test_invalid_update_product(self):
         response = client.put(
             reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}),
             data=json.dumps(self.invalid_payload),
             content_type='application/json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        print("reponse", response.data)
+        self.assertEqual(response.data, {
+            "name": [
+                "This field may not be blank."
+            ]
+        })
 
 
 class DeleteSingleProductTest(TestCase):
@@ -153,9 +230,15 @@ class DeleteSingleProductTest(TestCase):
     def test_valid_delete_product(self):
         response = client.delete(
             reverse('get_delete_update_product', kwargs={'pk': self.sao_paulo.pk}))
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.data, {
+            "message": "Produto: Camiseta do São Paulo, deletado com sucesso no sistema.",
+            "status": 204
+        })
 
     def test_invalid_delete_product(self):
         response = client.delete(
             reverse('get_delete_update_product', kwargs={'pk': 30}))
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data, {
+            "message": "Não existe registro com o ID: 30.",
+            "status": 404
+        })

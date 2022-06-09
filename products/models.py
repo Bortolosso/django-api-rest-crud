@@ -5,7 +5,7 @@ class Product(models.Model):
     name = models.CharField("Name", max_length=240)
     unity_value = models.IntegerField("Unity", default = 0)
     quantity_product = models.IntegerField("Quantity", default = 0)
-    status = models.CharField("Status", max_length=240, default = "")
+    status = models.CharField("Status", max_length=240, default = "", blank=True)
     
     def get_product(self):
         return self.name + ' adicionado com sucesso.'
